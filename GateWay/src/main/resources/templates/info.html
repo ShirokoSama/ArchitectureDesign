@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <title>GoodsInfo</title>
+    <link href="/semantic/semantic.min.css" rel="stylesheet">
+    <link href="/semantic/semantic.min.css" rel="stylesheet">
+
+</head>
+<body style="background-color: rgb(245,245,245)">
+
+    <div style="height: 20px"></div>
+
+    <div class="ui grid">
+        <div class="three wide column"></div>
+        <div class="ten wide column">
+            <div class="ui piled segment" style="margin: 20px 10px 20px 10px">
+
+                <div class="ui horizontal divider" style="font-size: 16px; color: teal">
+                    <i class="cube icon"></i>
+                    商品详情
+                </div>
+
+                <div class="ui grid">
+                    <div class="six wide column" style="padding: 30px">
+                        <div class="ui fluid bordered image">
+                            <div class="ui teal ribbon label" style="padding: 7px 14px 7px 14px">
+                                <i class="tags icon" style="margin: 0 5px 0 0"></i>
+                                <span th:text="${goodsInfo.source}"></span>
+                            </div>
+                            <img th:src="${goodsInfo.avatarUrl}" th:if="${goodsInfo.avatarUrl.startsWith('http://')}" style="padding: 10px">
+                            <img th:src="'http://'+${goodsInfo.avatarUrl}" th:unless="${goodsInfo.avatarUrl.startsWith('http://')}" style="padding: 10px">
+                        </div>
+                    </div>
+                    <div class="ui vertical hidden divider"></div>
+                    <div class="ten wide column" style="padding: 40px 25px 10px 10px">
+                        <div th:text="${goodsInfo.name}"
+                             style="color: teal; margin: 10px 10px 10px 0; font-size: 16px; font-weight: 600">
+                        </div>
+                        <div class="ui steps" style="margin: 15px 0 30px 35px">
+                            <div class="step" style="color: dimgrey; font-weight: 300">
+                                <i class="yen icon" style="font-size: 22px"></i>
+                                <div class="content" style="font-size: 12px">
+                                    <div class="title" th:text="${goodsInfo.price}"></div>
+                                </div>
+                            </div>
+                            <a class="step" style="color: dimgrey; font-weight: 300"
+                                th:href="${goodsInfo.goodsUrl}" th:if="${goodsInfo.goodsUrl.startsWith('http://')}">
+                                <i class="shop icon" style="font-size: 22px"></i>
+                                <div class="content" style="font-size: 12px">
+                                    <div class="title">开始购买</div>
+                                </div>
+                            </a>
+                            <a class="step" style="color: dimgrey; font-weight: 300"
+                               th:href="'http://'+${goodsInfo.goodsUrl}" th:unless="${goodsInfo.goodsUrl.startsWith('http://')}">
+                                <i class="shop icon" style="font-size: 22px"></i>
+                                <div class="content" style="font-size: 12px">
+                                    <div class="title">开始购买</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="ui tag labels">
+                            <a class="ui label" th:href="'/'+${userInfo.id}+'/search/'+${tag}+'/general'"
+                               th:each="tag: ${goodsInfo.synonym}" th:text="${tag}"
+                               style="margin-right: 15px">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui horizontal divider" style="font-size: 16px; color: teal">
+                    <i class="comments outline icon"></i>
+                    商品评论
+                </div>
+
+                <div class="ui minimal comments" style="padding: 0 40px 20px 40px; max-width: none">
+
+                    <div class="comment" th:each="commentInfo: ${commentInfos}" style="padding: 0 0 5px 20px">
+                        <a class="avatar">
+                            <img src="https://semantic-ui.com/images/avatar/small/matt.jpg"
+                                th:if="${userInfo.id}%4==0">
+                            <img src="https://semantic-ui.com/images/avatar/small/elliot.jpg"
+                                th:if="${userInfo.id}%4==1">
+                            <img src="https://semantic-ui.com/images/avatar/small/jenny.jpg"
+                                th:if="${userInfo.id}%4==2">
+                            <img src="https://semantic-ui.com/images/avatar/small/joe.jpg"
+                                th:if="${userInfo.id}%4==3">
+                        </a>
+                        <div class="content">
+                            <a class="author" th:text="${commentInfo.userName}"></a>
+                            <div class="text" th:text="${commentInfo.content}"></div>
+                        </div>
+                    </div>
+
+                    <div class="ui message" th:if="${returnInfo}==0">
+                        <i class="close icon"></i>
+                        <div class="header">
+                            评论未成功！
+                        </div>
+                        <p>请检查你发送的评论中是否含有敏感词汇</p>
+                    </div>
+
+                    <div class="ui message" th:if="${returnInfo}==-1">
+                        <i class="close icon"></i>
+                        <div class="header">
+                            评论未成功！
+                        </div>
+                        <p>由于你最近发送敏感信息过于频繁，因此在一段时间内被限制发言</p>
+                    </div>
+
+                    <form class="ui reply form fluid"
+                          th:action="'/'+${userInfo.id}+'/comment/'+${goodsInfo.id}" method="post">
+                        <div class="field">
+                            <textarea name="content"></textarea>
+                        </div>
+                        <div class="ui grid">
+                            <div class="twelve wide column floated left"></div>
+                            <div class="four wide column floated right">
+                                <button type="submit" class="ui teal labeled submit icon button">
+                                    <i class="icon edit"></i> 新增评论
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="three wide column"></div>
+    </div>
+
+    <script src="/semantic/semantic.min.js"></script>
+    <script src="/jquery/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $('.message .close').on('click', function() {
+            $(this).closest('.message').fadeOut();
+        });
+    </script>
+
+</body>
+</html>
